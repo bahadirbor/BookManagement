@@ -26,8 +26,15 @@ class libraryDbContext : DbContext {
 
     public DbSet<Staff> Staffs { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) { 
-    
+    protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        modelBuilder.ApplyConfiguration(new AuthorConfiguration());
+        modelBuilder.ApplyConfiguration(new BookConfiguration());
+        modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new LoanConfiguration());
+        modelBuilder.ApplyConfiguration(new MemberConfiguration());
+        modelBuilder.ApplyConfiguration(new PublisherConfiguration());
+        modelBuilder.ApplyConfiguration(new ReservationConfiguration());
+        modelBuilder.ApplyConfiguration(new StaffConfiguration());
     }
         
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
