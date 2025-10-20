@@ -23,6 +23,14 @@ class AuthorConfiguration : IEntityTypeConfiguration<Author>{
 
     public void Configure(EntityTypeBuilder<Author> builder){
         builder.HasKey(a => a.AuthorId);
+
+        builder.Property(a => a.FirstName)
+               .IsRequired()
+               .HasMaxLength(25);
+
+        builder.Property(a => a.LastName)
+                .IsRequired()
+                .HasMaxLength(25);
     }
 
 }

@@ -8,15 +8,19 @@ using System.Threading.Tasks;
 
 namespace bookManagement.Entities;
 
-class Category
-{
+class Category{
+    public int CategoryId { get; set; }
+    public string Name { get; set; }
+    public ICollection<Book> Books { get; set; }
 }
 
-class CategoryConfiguration : IEntityTypeConfiguration<Category>
-{
-    public void Configure(EntityTypeBuilder<Category> builder)
-    {
-       
+class CategoryConfiguration : IEntityTypeConfiguration<Category>{
+    public void Configure(EntityTypeBuilder<Category> builder){
+       builder.HasKey(c => c.CategoryId);
+
+        builder.Property(c => c.Name)
+                  .IsRequired()
+                  .HasMaxLength(50);
     }
 
 }
