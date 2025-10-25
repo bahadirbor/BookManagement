@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,20 +29,12 @@ class libraryDbContext : DbContext {
 
     public DbSet<Staff> Staffs { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) {
-        modelBuilder.ApplyConfiguration(new AuthorConfiguration());
-        modelBuilder.ApplyConfiguration(new BookConfiguration());
-        modelBuilder.ApplyConfiguration(new CategoryConfiguration());
-        modelBuilder.ApplyConfiguration(new LoanConfiguration());
-        modelBuilder.ApplyConfiguration(new MemberConfiguration());
-        modelBuilder.ApplyConfiguration(new PersonConfiguration());
-        modelBuilder.ApplyConfiguration(new PublisherConfiguration());
-        modelBuilder.ApplyConfiguration(new ReservationConfiguration());
-        //modelBuilder.ApplyConfiguration(new StaffConfiguration());
-    }
+    protected override void OnModelCreating(ModelBuilder modelBuilder){
+        // Apply all configurations from the current assembly
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }    
         
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
         optionsBuilder.UseSqlServer(/*YOUR CONNECTION STRING*/);
     }
 }
