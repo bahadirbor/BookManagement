@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace bookManagement.Entities;
 
 class Book {
-    public int BookId { get; set; }
+    public int Id { get; set; }
     public string BookName { get; set; }
     public string ISBN { get; set; }
     public int PublicationYear { get; set; }
@@ -22,17 +22,25 @@ class Book {
 class BookConfiguration: IEntityTypeConfiguration<Book>{
 
     public void Configure(EntityTypeBuilder<Book> builder){
-        builder.HasKey(b => b.BookId);
+        builder.HasKey(b => b.Id);
 
         builder.HasAlternateKey(b => b.ISBN);
-        
+
+        //Many-to-Many relationship between Book and Author has been configured
         builder.HasMany<Author>()
             .WithMany(a => a.Books)
             .UsingEntity(j => j.ToTable("BookAuthors"));
 
+        //Many-to-Many relationship between Book and Category has been configured
         builder.HasMany<Category>()
             .WithMany(c => c.Books)
             .UsingEntity(j => j.ToTable("BookCategories"));
+
+        //One-to-Many relationship between Book and Publisher has been configured
+        builder.HasOne<Publisher>()
+            .WithMany(p => p.Books)
+            .HasForeignKey(b => b.PublisherId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(b => b.BookName)
              .IsRequired()

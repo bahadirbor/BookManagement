@@ -15,6 +15,8 @@ class Publisher{
 
     public int? BookCount { get; set; }
 
+    public ICollection<Book> Books { get; set; }
+
 }
 
 class PublisherConfiguration : IEntityTypeConfiguration<Publisher>{
