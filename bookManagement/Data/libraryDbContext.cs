@@ -22,6 +22,8 @@ class libraryDbContext : DbContext {
 
     public DbSet<Loan> Loans { get; set; }
 
+    public DbSet<Person> People { get; set; }
+
     public DbSet<Reservation> Reservations { get; set; }
 
     public DbSet<Staff> Staffs { get; set; }
@@ -32,9 +34,10 @@ class libraryDbContext : DbContext {
         modelBuilder.ApplyConfiguration(new CategoryConfiguration());
         modelBuilder.ApplyConfiguration(new LoanConfiguration());
         modelBuilder.ApplyConfiguration(new MemberConfiguration());
+        modelBuilder.ApplyConfiguration(new PersonConfiguration());
         modelBuilder.ApplyConfiguration(new PublisherConfiguration());
         modelBuilder.ApplyConfiguration(new ReservationConfiguration());
-        modelBuilder.ApplyConfiguration(new StaffConfiguration());
+        //modelBuilder.ApplyConfiguration(new StaffConfiguration());
     }
         
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
