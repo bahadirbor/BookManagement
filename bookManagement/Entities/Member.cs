@@ -55,7 +55,7 @@ class MemberOperations{
         _context = new libraryDbContext();
     }
 
-    public async Task AddMember(MemberDto dto, Staff staff){
+    public async Task AddMemberAsync(MemberDto dto, Staff staff){
 
         string username = (dto.FirstName[0] + dto.Surname).ToLower();
 
@@ -108,7 +108,7 @@ class MemberOperations{
         }
     }
 
-    public async Task UpdateMember(MemberDto dto, Staff staff) {
+    public async Task UpdateMemberAsync(MemberDto dto, Staff staff) {
         Console.Write("Enter the username of the member to update: ");
         string username = Console.ReadLine();
 
@@ -121,6 +121,7 @@ class MemberOperations{
             Console.WriteLine($"3. Username: {member.Username}");
             Console.WriteLine($"4. Email: {member.Email}");
             Console.WriteLine($"5. Phone Number: {member.PhoneNumber}");
+            Console.WriteLine($"6. Password");
             
             Console.Write("\nEnter the number corresponding to the field you want to update: ");
             int choice = int.Parse(Console.ReadLine());
@@ -133,22 +134,27 @@ class MemberOperations{
                     case 1:
                         member.FirstName = dto.FirstName;
                         await _context.SaveChangesAsync();
-                        Console.WriteLine("Member updated successfully.");
+                        Console.WriteLine("Member name updated successfully.");
                         break;
                     case 2:
                         member.Surname = dto.Surname;
                         await _context.SaveChangesAsync();
-                        Console.WriteLine("Member updated successfully.");
+                        Console.WriteLine("Member surname updated successfully.");
                         break;
                     case 4:
                         member.Email = dto.Email;
                         await _context.SaveChangesAsync();
-                        Console.WriteLine("Member updated successfully.");
+                        Console.WriteLine("Member email updated successfully.");
                         break;
                     case 5:
                         member.PhoneNumber = dto.PhoneNumber;
                         await _context.SaveChangesAsync();
-                        Console.WriteLine("Member updated successfully.");
+                        Console.WriteLine("Member phone number updated successfully.");
+                        break;
+                    case 6:
+                        member.Password = dto.Password;
+                        await _context.SaveChangesAsync();
+                        Console.WriteLine("Member password updated successfully.");
                         break;
                     default:
                         Console.WriteLine("Invalid choice. Update aborted.");
