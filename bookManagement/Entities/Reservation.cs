@@ -13,6 +13,8 @@ class Reservation{
     public DateTime ReservationDate { get; set; }
     public int BookId { get; set; }
     public int UserId { get; set; }
+    public Book Book { get; set; }
+    public Member User { get; set; }
 }
 
 class ReservationConfiguration : IEntityTypeConfiguration<Reservation>

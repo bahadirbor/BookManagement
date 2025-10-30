@@ -12,11 +12,13 @@ class Author{
     public int AuthorId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public ICollection<Book> Books { get; set; }
+
     public int NumberOfBooks 
     {
         get {return Books != null ? Books.Count : 0;}
     }
+
+    public ICollection<Book> Books { get; set; }
 }
 
 class AuthorConfiguration : IEntityTypeConfiguration<Author>{
