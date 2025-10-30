@@ -28,6 +28,7 @@ class PersonConfiguration : IEntityTypeConfiguration<Person>{
         builder.HasKey(s => s.PersonId);
 
         builder.HasDiscriminator<string>("PersonType")
+            .HasValue<Person>("Person")
             .HasValue<Staff>("Staff")
             .HasValue<Member>("Member");
 
@@ -39,15 +40,46 @@ class PersonConfiguration : IEntityTypeConfiguration<Person>{
                .IsRequired()
                .HasMaxLength(20);
 
+        builder.Property(p => p.Password)
+            .IsRequired()
+            .HasMaxLength(16);
+
+        
         builder.HasData(new
         {
             PersonId = 1,
             FirstName = "Admin",
             Surname = "Admin",
-            PersonType = "Administrator",
+            PersonType = "Person",
             Username = "admin",
             Password = 753159
         });
 
     }
-} 
+}
+
+class PersonOperations
+{
+    private readonly LibraryDbContext _context;
+
+    public PersonOperations()
+    {
+        _context = new LibraryDbContext();
+    }
+
+    public async Task<Person?> LoginAsync(string username, int password)
+    {
+        var user = await _context.People.FirstOrDefaultAsync(p => p.Username == username && p.Password == password);
+
+        if (user != null)
+        {
+            Console.WriteLine("Login successful!");
+            return user;
+        }
+        else
+        {
+            Console.WriteLine("Invalid username or password. Please try again.");
+            return null;
+        }
+    }
+}
