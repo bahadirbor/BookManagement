@@ -1,5 +1,9 @@
 ﻿using bookManagement.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace bookManagement.Data;
 
-class libraryDbContext : DbContext {
+class LibraryDbContext : DbContext {
     public DbSet<Book> Books { get; set; }
 
     public DbSet<Author> Authors { get; set; }
@@ -29,11 +33,22 @@ class libraryDbContext : DbContext {
 
     public DbSet<Staff> Staffs { get; set; }
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder){
-        // Apply all configurations from the current assembly
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-    }    
-        
+        modelBuilder.ApplyConfiguration(new AuthorConfiguration());
+        modelBuilder.ApplyConfiguration(new BookConfiguration());
+        modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new LoanConfiguration());
+        modelBuilder.ApplyConfiguration(new MemberConfiguration());
+        modelBuilder.ApplyConfiguration(new PersonConfiguration());
+        modelBuilder.ApplyConfiguration(new PublisherConfiguration());
+        modelBuilder.ApplyConfiguration(new ReservationConfiguration());
+        modelBuilder.ApplyConfiguration(new StaffConfiguration());
+
+        // (Optional) Apply all configurations from the current assembly
+        //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
         optionsBuilder.UseSqlServer(/*YOUR CONNECTION STRING*/);
     }
