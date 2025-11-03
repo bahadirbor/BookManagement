@@ -15,6 +15,7 @@ class Member : Person{
 
     public string? PhoneNumber { get; set; }
     
+    public string WhoModifiedLast { get; set; }
 }
 
 class MemberConfiguration : IEntityTypeConfiguration<Member>
@@ -49,13 +50,13 @@ class MemberDto{
 
 class MemberOperations{
     //Staff operations such as Add, Update, Remove
-    private readonly libraryDbContext _context;
+    private readonly LibraryDbContext _context;
 
     public MemberOperations() {
-        _context = new libraryDbContext();
+        _context = new LibraryDbContext();
     }
 
-    public async Task AddMemberAsync(MemberDto dto, Staff staff){
+    public async Task AddMemberAsync(MemberDto dto, Person person){
 
         string username = (dto.FirstName[0] + dto.Surname).ToLower();
 
@@ -64,7 +65,7 @@ class MemberOperations{
         Console.Write("Enter staff password to confirm adding member: ");
         int staffPassword = int.Parse(Console.ReadLine());
 
-        if (usernameExists == false && staff.Password == staffPassword)
+        if (usernameExists == false && person.Password == staffPassword)
         {
             Member member = new Member()
             {
@@ -73,7 +74,8 @@ class MemberOperations{
                 Username = username,
                 Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
-                Password = dto.Password
+                Password = dto.Password,
+                WhoModifiedLast = person.Username
             };
 
             await _context.Members.AddAsync(member);
@@ -85,16 +87,17 @@ class MemberOperations{
         }
     }
 
-    public async Task DeleteMember(Staff staff) {
+    public async Task DeleteMember(Person person) {
         Console.Write("Enter the username of the member to delete: ");
         string username = Console.ReadLine();
 
         var member = await _context.Members.FirstOrDefaultAsync(m => m.Username == username);
+
         if (member != null) {
             Console.Write("Enter the staff password for confirmation: ");
             int password = int.Parse(Console.ReadLine());
             
-            if (staff.Password == password) {
+            if (person.Password == password) {
                 _context.Members.Remove(member);
                 await _context.SaveChangesAsync();
                 Console.WriteLine("Member deleted successfully.");
@@ -108,7 +111,7 @@ class MemberOperations{
         }
     }
 
-    public async Task UpdateMemberAsync(MemberDto dto, Staff staff) {
+    public async Task UpdateMemberAsync(MemberDto dto, Person person) {
         Console.Write("Enter the username of the member to update: ");
         string username = Console.ReadLine();
 
@@ -129,7 +132,7 @@ class MemberOperations{
             Console.Write("\nEnter the staff password for confirmation: ");
             int password = int.Parse(Console.ReadLine());
             
-            if (staff.Password == password) {
+            if (person.Password == password) {
                 switch (choice){
                     case 1:
                         member.FirstName = dto.FirstName;
@@ -141,6 +144,9 @@ class MemberOperations{
                         await _context.SaveChangesAsync();
                         Console.WriteLine("Member surname updated successfully.");
                         break;
+                    case 3:
+                        Console.WriteLine("Username cannot be changed. Update aborted.");
+                        return;
                     case 4:
                         member.Email = dto.Email;
                         await _context.SaveChangesAsync();
