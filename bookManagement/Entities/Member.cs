@@ -51,9 +51,11 @@ class MemberDto{
 class MemberOperations{
     //Staff operations such as Add, Update, Remove
     private readonly LibraryDbContext _context;
+    private readonly PersonOperations _personOperations;
 
     public MemberOperations() {
         _context = new LibraryDbContext();
+        _personOperations = new PersonOperations();
     }
 
     public async Task AddMemberAsync(MemberDto dto, Person person){
@@ -63,9 +65,9 @@ class MemberOperations{
         bool usernameExists = await _context.Members.AnyAsync(m => m.Username == username);
 
         Console.Write("Enter staff password to confirm adding member: ");
-        int staffPassword = int.Parse(Console.ReadLine());
+        int Password = int.Parse(Console.ReadLine());
 
-        if (usernameExists == false && person.Password == staffPassword)
+        if (usernameExists == false && _personOperations.Verify(person, Password))
         {
             Member member = new Member()
             {
@@ -97,7 +99,7 @@ class MemberOperations{
             Console.Write("Enter the staff password for confirmation: ");
             int password = int.Parse(Console.ReadLine());
             
-            if (person.Password == password) {
+            if (_personOperations.Verify(person, password)) {
                 _context.Members.Remove(member);
                 await _context.SaveChangesAsync();
                 Console.WriteLine("Member deleted successfully.");
@@ -132,7 +134,7 @@ class MemberOperations{
             Console.Write("\nEnter the staff password for confirmation: ");
             int password = int.Parse(Console.ReadLine());
             
-            if (person.Password == password) {
+            if (_personOperations.Verify(person, password)) {
                 switch (choice){
                     case 1:
                         member.FirstName = dto.FirstName;

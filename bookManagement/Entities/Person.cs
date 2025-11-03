@@ -82,4 +82,16 @@ class PersonOperations
             return null;
         }
     }
+
+    public bool Verify(Person person, int Password)
+    {
+        if (person != null && person.Password == Password)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

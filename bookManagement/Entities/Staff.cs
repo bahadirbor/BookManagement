@@ -45,25 +45,26 @@ class StaffDto{
 class StaffOperations{
     //Staff operations such as Add, Update, Remove
     private readonly LibraryDbContext _context;
+    private readonly PersonOperations _personOperations;
 
     public StaffOperations() {
         _context = new LibraryDbContext();
+        _personOperations = new PersonOperations();
     }
 
-    public async Task AddStaffAsync(StaffDto dto){
-        var admin = await _context.People.FindAsync(1);
-
+    public async Task AddStaffAsync(StaffDto dto, Person person){
         string username = (dto.FirstName[0] + dto.Surname).ToLower();
 
         bool usernameExists = await _context.Staffs
             .AnyAsync(s => s.Username == username);
 
 
-        if(usernameExists == false && admin != null)
+        if(usernameExists == false)
         {
             Console.Write("\nEnter the administrator password to confirm:");
             int adminPassword = int.Parse(Console.ReadLine());
-            if(admin.Password != adminPassword){
+
+            if(!_personOperations.Verify(person, adminPassword)){
                 Console.WriteLine("Administrator password is incorrect. Staff addition aborted.");
                 return;
             }
@@ -91,7 +92,7 @@ class StaffOperations{
         Console.WriteLine("Staff added successfully.");
     }
 
-    public async Task UpdateStaffAsync() {
+    public async Task UpdateStaffAsync(Person person) {
         Console.Write("Enter the username of the staff to update:");
         string username = Console.ReadLine();
 
@@ -122,11 +123,9 @@ class StaffOperations{
             int choice = int.Parse(Console.ReadLine());
 
             Console.Write("\nEnter the admin password for confirmation: ");
-            int password = int.Parse(Console.ReadLine());
+            int adminPassword = int.Parse(Console.ReadLine());
 
-            var admin = await _context.People.FindAsync(1);
-
-            if (admin.Password == password)
+            if (_personOperations.Verify(person, adminPassword))
             {
                 switch (choice)
                 {
@@ -164,13 +163,13 @@ class StaffOperations{
             }
             else
             {
-                Console.WriteLine("Incorrect password. Update aborted.");
+                Console.WriteLine("Administrator password is incorrect. Staff update aborted.");
             }
         } 
 
     }
 
-    public async Task RemoveStaffWithUsernameAysnc() {
+    public async Task RemoveStaffWithUsernameAysnc(Person person) {
         // Remove staff based on username
         Console.Write("Enter the username of the staff to remove:");
         string username = Console.ReadLine();
@@ -183,9 +182,7 @@ class StaffOperations{
         Console.Write("\nEnter the administrator password to confirm:");
         int adminPassword = int.Parse(Console.ReadLine());
 
-        var admin = await _context.People.FindAsync(1);
-
-        if (admin.Password == adminPassword && adminPassword != null)
+        if (_personOperations.Verify(person, adminPassword))
         {
             var deletedStaff = await _context.Staffs
                 .Where(s => s.Username == username)
