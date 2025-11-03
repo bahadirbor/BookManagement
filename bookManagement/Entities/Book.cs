@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using bookManagement.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ class Book {
     public int PublisherId { get; set; }
     public DateTime AddDate { get; set; }
     public bool IsLoaned { get; set; }
+    public string WhoModifiedLast { get; set; }
 
     //Navigation Properties
     public ICollection<Author> Authors { get; set; } = new List<Author>();
@@ -57,4 +59,48 @@ class BookConfiguration: IEntityTypeConfiguration<Book>{
             .HasDefaultValueSql("GETDATE()");
         
     }
+}
+
+
+class BookDto{
+    //Created a Data Transfer Object for Book to facilitate data transfer
+    public string BookName { get; set; }
+    public string ISBN { get; set; }
+    public string? PublicationDate { get; set; }
+    public int PublisherId { get; set; }
+    public List<string> AuthorNameSurname { get; set; }
+    public List<int> Categories { get; set; }
+}
+
+class BookOperations{
+    //Book operations such as Show All Books
+    private readonly LibraryDbContext _context;
+    
+    public BookOperations() {
+        _context = new LibraryDbContext();
+    }
+
+    public async Task ShowAllBooksAsync(){
+        
+        var books = await _context.Books
+            .Include(b => b.Authors)
+            .Include(b => b.Categories)
+            .Include(b => b.Publisher)
+            .ToListAsync();
+
+        foreach(var book in books){
+            Console.WriteLine($"Book ID: {book.BookId}");
+            Console.WriteLine($"Book Name: {book.BookName}");
+            Console.WriteLine($"ISBN: {book.ISBN}");
+            Console.WriteLine($"Publication Date: {book.PublicationDate}");
+            Console.WriteLine($"Publisher: {book.Publisher.Name}");
+            Console.WriteLine($"Authors: {string.Join(", ", book.Authors.Select(a => a.FirstName + " " + a.LastName))}");
+            Console.WriteLine($"Categories: {string.Join(", ", book.Categories.Select(c => c.Name))}");
+            Console.WriteLine($"Added On: {book.AddDate}");
+            Console.WriteLine($"Is Loaned: {(book.IsLoaned ? "Yes" : "No")}");
+            Console.WriteLine(new string('-', 40));
+        }
+    }
+
+    
 }

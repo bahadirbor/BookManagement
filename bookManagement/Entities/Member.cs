@@ -177,4 +177,19 @@ class MemberOperations{
             Console.WriteLine("Member not found.");
         }
     }
+
+    public async Task ShowAllMembersAsync(){
+        
+        var members = await _context.Members.ToListAsync();
+
+        foreach(var member in members){
+            Console.WriteLine($"\nMember ID: {member.PersonId}");
+            Console.WriteLine($"First Name: {member.FirstName}");
+            Console.WriteLine($"Surname: {member.Surname}");
+            Console.WriteLine($"Username: {member.Username}");
+            Console.WriteLine($"Email: {member.Email}");
+            Console.WriteLine($"Phone Number: {member.PhoneNumber}");
+            Console.WriteLine(new string('-', 40));
+        }
+    }
 }
