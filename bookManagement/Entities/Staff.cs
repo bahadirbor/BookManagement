@@ -9,6 +9,8 @@ namespace bookManagement.Entities;
 
 class Staff : Person{
     public string Position { get; set; }
+
+    public string WhoModifiedLast { get; set; }
 }
 
 class StaffConfiguration : IEntityTypeConfiguration<Staff>
@@ -37,6 +39,7 @@ class StaffDto{
     [Required]
     [MaxLength(16)]
     public int Password { get; set; }
+    public string? Position { get; set; }
 }
 
 class StaffOperations{
@@ -74,8 +77,13 @@ class StaffOperations{
             FirstName = dto.FirstName,
             Surname = dto.Surname,
             Username = username,
-            Password = dto.Password
+            Password = dto.Password,
+            WhoModifiedLast = "admin"   
         };
+
+        if(dto.Position != null){
+            staff.Position = dto.Position;
+        }
 
         await _context.Staffs.AddAsync(staff);
         await _context.SaveChangesAsync();
