@@ -58,6 +58,23 @@ class MemberOperations{
         _personOperations = new PersonOperations();
     }
 
+    public async Task ShowAllMembersAsync()
+    {
+
+        var members = await _context.Members.ToListAsync();
+
+        foreach (var member in members)
+        {
+            Console.WriteLine($"\nMember ID: {member.PersonId}");
+            Console.WriteLine($"First Name: {member.FirstName}");
+            Console.WriteLine($"Surname: {member.Surname}");
+            Console.WriteLine($"Username: {member.Username}");
+            Console.WriteLine($"Email: {member.Email}");
+            Console.WriteLine($"Phone Number: {member.PhoneNumber}");
+            Console.WriteLine(new string('-', 40));
+        }
+    }
+
     public async Task AddMemberAsync(MemberDto dto, Person person){
 
         string username = (dto.FirstName[0] + dto.Surname).ToLower();
@@ -86,30 +103,6 @@ class MemberOperations{
         else{
             Console.WriteLine("Username already exists or Incorrect staff password.\nOperation aborted.");
             return;
-        }
-    }
-
-    public async Task DeleteMember(Person person) {
-        Console.Write("Enter the username of the member to delete: ");
-        string username = Console.ReadLine();
-
-        var member = await _context.Members.FirstOrDefaultAsync(m => m.Username == username);
-
-        if (member != null) {
-            Console.Write("Enter the staff password for confirmation: ");
-            int password = int.Parse(Console.ReadLine());
-            
-            if (_personOperations.Verify(person, password)) {
-                _context.Members.Remove(member);
-                await _context.SaveChangesAsync();
-                Console.WriteLine("Member deleted successfully.");
-            } 
-            else {
-                Console.WriteLine("Incorrect password. Deletion aborted.");
-            }
-        } 
-        else {
-            Console.WriteLine("Member not found.");
         }
     }
 
@@ -178,18 +171,33 @@ class MemberOperations{
         }
     }
 
-    public async Task ShowAllMembersAsync(){
-        
-        var members = await _context.Members.ToListAsync();
+    public async Task RemoveMemberWithUsernameAsync(Person person)
+    {
+        Console.Write("Enter the username of the member to delete: ");
+        string username = Console.ReadLine();
 
-        foreach(var member in members){
-            Console.WriteLine($"\nMember ID: {member.PersonId}");
-            Console.WriteLine($"First Name: {member.FirstName}");
-            Console.WriteLine($"Surname: {member.Surname}");
-            Console.WriteLine($"Username: {member.Username}");
-            Console.WriteLine($"Email: {member.Email}");
-            Console.WriteLine($"Phone Number: {member.PhoneNumber}");
-            Console.WriteLine(new string('-', 40));
+        var member = await _context.Members.FirstOrDefaultAsync(m => m.Username == username);
+
+        if (member != null)
+        {
+            Console.Write("Enter the staff password for confirmation: ");
+            int password = int.Parse(Console.ReadLine());
+
+            if (_personOperations.Verify(person, password))
+            {
+                _context.Members.Remove(member);
+                await _context.SaveChangesAsync();
+                Console.WriteLine("Member deleted successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Incorrect password. Deletion aborted.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Member not found.");
         }
     }
+
 }

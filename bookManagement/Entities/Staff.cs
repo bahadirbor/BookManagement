@@ -52,6 +52,21 @@ class StaffOperations{
         _personOperations = new PersonOperations();
     }
 
+    public async Task ShowAllStaffsAsync()
+    {
+        var staffs = await _context.Staffs.ToListAsync();
+
+        foreach (var staff in staffs)
+        {
+            Console.WriteLine($"\nStaff ID: {staff.PersonId}");
+            Console.WriteLine($"First Name: {staff.FirstName}");
+            Console.WriteLine($"Surname: {staff.Surname}");
+            Console.WriteLine($"Username: {staff.Username}");
+            Console.WriteLine($"Position: {staff.Position}");
+            Console.WriteLine(new string('-', 40));
+        }
+    }
+
     public async Task AddStaffAsync(StaffDto dto, Person person){
         string username = (dto.FirstName[0] + dto.Surname).ToLower();
 
@@ -203,16 +218,4 @@ class StaffOperations{
             Console.WriteLine("Administrator password is incorrect. Staff removal aborted.");
     }
 
-    public async Task ShowAllStaffsAsync(){
-        var staffs = await _context.Staffs.ToListAsync();
-
-        foreach(var staff in staffs){
-            Console.WriteLine($"\nStaff ID: {staff.PersonId}");
-            Console.WriteLine($"First Name: {staff.FirstName}");
-            Console.WriteLine($"Surname: {staff.Surname}");
-            Console.WriteLine($"Username: {staff.Username}");
-            Console.WriteLine($"Position: {staff.Position}");
-            Console.WriteLine(new string('-', 40));
-        }
-    }
 }
