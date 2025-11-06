@@ -132,7 +132,7 @@ class LoanOperations{
             Console.WriteLine("The book is already loaned out.");
     }
     
-    public async Task UpdateLoanAsync(Person person, Member member, int loanId){
+    public async Task UpdateLoanAsync(Person person, int loanId){
         var loan = await _context.Loans.FindAsync(loanId);
 
         LoanDto updatedLoan = new LoanDto();
