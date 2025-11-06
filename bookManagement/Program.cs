@@ -1,6 +1,9 @@
-﻿using bookManagement.Entities;
+﻿using bookManagement.Data;
+using bookManagement.Entities;
+using Microsoft.EntityFrameworkCore;
 
 PersonOperations personOperations = new PersonOperations();
+LibraryDbContext context = new LibraryDbContext();
 bool exit = false;
 
 while (true)
@@ -225,8 +228,62 @@ while (true)
                         }
                         break;
                     case 4:
-                        // NOT COMPLETED YET
                         // Admin's Loan Operations
+                        LoanOperations loanOperations = new LoanOperations();
+                        Console.WriteLine("1. Add Loan");
+                        Console.WriteLine("2. Update Loan");
+                        Console.WriteLine("3. Return Loan");
+                        Console.WriteLine("4. Show All Active Loans");
+                        Console.WriteLine("5. Return to main menu");
+                        
+                        Console.Write("Enter the loan operation number: ");
+                        int adminLoanOperationDecision = int.Parse(Console.ReadLine());
+
+                        switch (adminLoanOperationDecision){
+                            case 1:
+                                // Add Loan
+                                LoanDto newLoan = new LoanDto();
+                                Console.Write("Enter Book ID: ");
+                                newLoan.BookId = int.Parse(Console.ReadLine());
+                                Console.Write("Enter Member ID: ");
+                                newLoan.UserId = int.Parse(Console.ReadLine());
+                                newLoan.LoanDate = DateTime.Now;
+                                await loanOperations.AddLoanAsync(newLoan, user);
+                                await Task.Delay(1000);
+                                break;
+                            case 2:
+                                // Update Loan
+                                await loanOperations.ShowActiveLoansAsync();
+                                Console.Write("Enter Loan ID for updating loan: ");
+                                int loanIdToUpdate = int.Parse(Console.ReadLine());
+
+                                await loanOperations.UpdateLoanAsync(user, loanIdToUpdate);
+                                await Task.Delay(1000);
+                                break;
+                            case 3:
+                                //Return Loan
+                                Console.WriteLine("Enter the member name: ");
+                                string memberName = Console.ReadLine();
+                                string[] parseName = memberName.Split(' ');
+
+                                Member member = await context.Members.FirstOrDefaultAsync(m => m.FirstName == parseName[0] && m.Surname == parseName[1]);
+                                if (member != null)
+                                    await loanOperations.ReturnLoanAsync(user, member);
+                                else
+                                    Console.WriteLine("User not found");
+                                break;
+                            case 4:
+                                //Show all loans
+                                await loanOperations.ShowActiveLoansAsync();
+                                await Task.Delay(1000);
+                                break;
+                            case 5:
+                                Console.WriteLine("\nReturning to main menu...");
+                                await Task.Delay(1000);
+                                break;
+                            default:
+                                break;
+                        }
                         break;
                     case 5:
                         // Show All Books
@@ -258,7 +315,6 @@ while (true)
                         Console.WriteLine("Invalid choice.");
                         break;
                 }
-
                 break;
             #endregion
 
@@ -279,32 +335,133 @@ while (true)
                 switch (staffDecisionNumber)
                 {
                     case 1:
-                        // NOT COMPLETED YET
                         // Book Operations
-                        BookDto newBook = new BookDto();
+                        BookOperations staffBookOperations = new BookOperations();
 
-                        Console.Write("Enter Book Name: ");
-                        newBook.BookName = Console.ReadLine();
+                        Console.WriteLine("1. Add Book");
+                        Console.WriteLine("2. Update Book");
+                        Console.WriteLine("3. Remove Book");
+                        Console.WriteLine("4. Return to main menu");
 
-                        Console.Write("Enter ISBN: ");
-                        newBook.ISBN = Console.ReadLine();
+                        Console.WriteLine("Enter the book operation number: ");
+                        int staffBookOperationDecision = int.Parse(Console.ReadLine());
 
-                        Console.Write("Enter Publication Date (yyyy-mm-dd): ");
-                        newBook.PublicationDate = Console.ReadLine();
+                        switch (staffBookOperationDecision)
+                        {
+                            case 1:
+                                // Add Book
+                                BookDto newBook = new BookDto();
 
-                        Console.Write("Enter Publisher Name: ");
-                        newBook.PublisherName = (Console.ReadLine());
+                                Console.Write("Enter Book Name: ");
+                                newBook.BookName = Console.ReadLine();
 
-                        Console.Write("Enter Author Name and Surname:");
-                        string nameSurname = Console.ReadLine();
+                                Console.Write("Enter ISBN: ");
+                                newBook.ISBN = Console.ReadLine();
 
-                        //List<string> nameAndSurname = nameSurname.Split(' ');
+                                Console.Write("Enter Publication Date (yyyy-mm-dd): ");
+                                newBook.PublicationDate = Console.ReadLine();
 
-                        //newBook.AuthorNameSurname = nameAndSurname;
+                                Console.Write("Enter Publisher Name: ");
+                                newBook.PublisherName = Console.ReadLine();
+
+                                List<string> Authors = new List<string>();
+
+                                while (true)
+                                {
+                                    Console.Write("Enter Author Name and Surname or press 'x' to stop:");
+                                    string nameSurname = Console.ReadLine();
+                                    if (!"x".Equals(nameSurname.ToLower()) && nameSurname != null)
+                                        Authors.Add(nameSurname);
+                                    else
+                                        break;
+                                }
+                                newBook.AuthorNameSurname = Authors;
+
+                                List<string> Categories = new List<string>();
+
+                                while (true)
+                                {
+                                    Console.Write("Enter another Category Name or press 'x' to stop:");
+                                    string categoryName = Console.ReadLine();
+                                    if (!"x".Equals(categoryName.ToLower()) && categoryName != null)
+                                        Categories.Add(categoryName);
+                                    else
+                                        break;
+                                }
+                                newBook.Categories = Categories;
+
+                                await staffBookOperations.AddBookAsync(newBook, user);
+                                await Task.Delay(1000);
+                                break;
+                            case 2:
+                                BookDto updateBook = new BookDto();
+                                await staffBookOperations.UpdateBookAsync(updateBook, user);
+                                await Task.Delay(1000);
+                                break;
+                            case 3:
+                                await staffBookOperations.RemoveBookWithNameAsync();
+                                await Task.Delay(1000);
+                                break;
+                            case 4:
+                                Console.WriteLine("\nReturning to main menu...");
+                                await Task.Delay(1000);
+                                break;
+                            default:
+                                break;
+                        }
                         break;
                     case 2:
-                        // NOT COMPLETED YET
                         // Loan Operations
+                        LoanOperations loanOperations = new LoanOperations();
+                        Console.WriteLine("1. Add Loan");
+                        Console.WriteLine("2. Update Loan");
+                        Console.WriteLine("3. Return Loan");
+                        Console.WriteLine("4. Return to main menu");
+
+                        Console.Write("Enter the loan operation number: ");
+                        int staffLoanOperationDecision = int.Parse(Console.ReadLine());
+
+                        switch (staffLoanOperationDecision)
+                        {
+                            case 1:
+                                // Add Loan
+                                LoanDto newLoan = new LoanDto();
+                                Console.Write("Enter Book ID: ");
+                                newLoan.BookId = int.Parse(Console.ReadLine());
+                                Console.Write("Enter Member ID: ");
+                                newLoan.UserId = int.Parse(Console.ReadLine());
+                                newLoan.LoanDate = DateTime.Now;
+                                await loanOperations.AddLoanAsync(newLoan, user);
+                                await Task.Delay(1000);
+                                break;
+                            case 2:
+                                // Update Loan
+                                await loanOperations.ShowActiveLoansAsync();
+                                Console.Write("Enter Loan ID for updating loan: ");
+                                int loanIdToUpdate = int.Parse(Console.ReadLine());
+
+                                await loanOperations.UpdateLoanAsync(user, loanIdToUpdate);
+                                await Task.Delay(1000);
+                                break;
+                            case 3:
+                                //Return Loan
+                                Console.WriteLine("Enter the member name: ");
+                                string memberName = Console.ReadLine();
+                                string[] parseName = memberName.Split(' ');
+
+                                Member member = await context.Members.FirstOrDefaultAsync(m => m.FirstName == parseName[0] && m.Surname == parseName[1]);
+                                if (member != null)
+                                    await loanOperations.ReturnLoanAsync(user, member);
+                                else
+                                    Console.WriteLine("User not found");
+                                break;
+                            case 4:
+                                Console.WriteLine("\nReturning to main menu...");
+                                await Task.Delay(1000);
+                                break;
+                            default:
+                                break;
+                        }
                         break;
                     case 3:
                         // Member Operations
@@ -375,8 +532,10 @@ while (true)
                         await Task.Delay(1000);
                         break;
                     case 6:
-                        // Not Completed Yet
                         // Show All Loans
+                        LoanOperations showLoans = new LoanOperations();
+                        await showLoans.ShowActiveLoansAsync();
+                        await Task.Delay(1000);
                         break;
                     case 7:
                         Console.WriteLine("Exiting...");
@@ -393,8 +552,102 @@ while (true)
             case "Member":
                 Console.WriteLine($"Welcome Member: {user.FirstName} {user.Surname}");
                 Console.WriteLine("1. Reservation Operations");
-                Console.WriteLine("2. Show All Books");
+                Console.WriteLine("2. Show My Reservations");
+                Console.WriteLine("3. Show All Books");
+                Console.WriteLine("4. Show My Active Loans");
+                Console.WriteLine("5. Show My Past Loans");
+                Console.WriteLine("6. Exit");
 
+                Console.Write("Enter the operation decision number: ");
+                int memberDecisionNumber = int.Parse(Console.ReadLine());
+
+                switch( memberDecisionNumber)
+                {
+                    case 1:
+                        // Reservation Operations
+                        ReservationOperations reservationOperations = new ReservationOperations();
+                        Console.WriteLine("1. Add Reservation");
+                        Console.WriteLine("2. Change Reservation Informations");
+                        Console.WriteLine("3. Delete Reservation");
+
+                        Console.Write("Enter the operation number: ");
+                        int memberReservationDecisionNumber = int.Parse(Console.ReadLine());
+
+                        ReservationDto reservationDto = new ReservationDto();
+
+                        switch (memberReservationDecisionNumber){
+                            case 1:
+                                Console.Write("Enter the book name: ");
+                                reservationDto.BookName = Console.ReadLine();
+
+                                await reservationOperations.AddReservationAsync(reservationDto, user);
+                                await Task.Delay(1000);
+                                break;
+                            case 2:
+                                await reservationOperations.ShowMemberReservationsAsync(user);
+                                await Task.Delay(1000);
+
+                                Console.Write("Enter the reservation id to change: ");
+                                int reservationUpdateId = int.Parse(Console.ReadLine());
+
+                                var reservation = await context.Reservations.FindAsync(reservationUpdateId);
+                                Console.WriteLine($"Reservation ID: {reservation.ReservationId}, Date: {reservation.ReservationDate}, Book: {reservation.Book.BookName}, User: {reservation.User.FirstName}");
+
+                                Console.WriteLine("\nEnter the new book name: ");
+                                reservationDto.BookName = Console.ReadLine();
+
+                                await reservationOperations.UpdateReservationAsync(reservationUpdateId, reservationDto);
+                                await Task.Delay(1000);
+                                break;
+                            case 3:
+                                await reservationOperations.ShowMemberReservationsAsync(user);
+                                await Task.Delay(1000);
+
+                                Console.Write("Enter the reservation id to delete: ");
+                                int reservationDeleteId = int.Parse(Console.ReadLine());
+
+                                await reservationOperations.DeleteReservationAsync(reservationDeleteId);
+                                await Task.Delay(1000);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 2:
+                        //Show member's reservations
+                        ReservationOperations showMemberReservations = new ReservationOperations();
+                        await showMemberReservations.ShowMemberReservationsAsync(user);
+
+                        break;
+                    case 3:
+                        // Show All Books
+                        BookOperations showBooks = new BookOperations();
+
+                        await showBooks.ShowAllBooksAsync();
+                        await Task.Delay(1000);
+                        break;
+                    case 4:
+                        // Show My Active Loans
+                        LoanOperations loanOperations = new LoanOperations();
+
+                        await loanOperations.ShowActiveLoansByUserAsync(user);
+                        await Task.Delay(1000);
+                        break;
+                    case 5:
+                        // Show My Past Loans
+                        LoanOperations loanOps = new LoanOperations();
+
+                        await loanOps.ShowPastLoansByUserAsync(user);
+                        await Task.Delay(1000);
+                        break;
+                    case 6:
+                        Console.WriteLine("Exiting...");
+                        exit = true;
+                        await Task.Delay(1000);
+                        break;
+                    default:
+                        break;
+                }
                 break;
             #endregion
             default:
