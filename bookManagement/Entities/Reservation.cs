@@ -40,7 +40,7 @@ class ReservationOperations{
         _context = new LibraryDbContext();
     }
     
-    public async Task ShowMemberReservationsAsync(Member member){
+    public async Task ShowMemberReservationsAsync(Person member){
         var reservations = await _context.Reservations
             .Include(r => r.Book)
             .Include(r => r.User)
@@ -62,7 +62,7 @@ class ReservationOperations{
         }
     }
 
-    public async Task AddReservationAsync(ReservationDto reservationDto, Member member){
+    public async Task AddReservationAsync(ReservationDto reservationDto, Person member){
         var book = await _context.Books.FirstOrDefaultAsync(d => d.BookName == reservationDto.BookName);
 
         if (book == null){
